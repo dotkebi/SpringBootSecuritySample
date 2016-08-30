@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/test?useSSL=false
+    username: test
+    password: test
+    tomcat:
+      test-while-idle: true
+      time-between-eviction-runs-millis: 3600000
+      validation-query: SELECT 1
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database: mysql
+    show-sql: true
+
+logging:
+  file: logs/test.log
+  level: info
