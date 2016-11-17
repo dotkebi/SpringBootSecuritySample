@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * @author by myoungjin on 2016-08-30.
+ * @author by dotkebi@gmail.com on 2016-08-30.
  */
 @Component
 public class AdminDao {

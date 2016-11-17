@@ -1,11 +1,15 @@
 package com.github.dotkebi.config;
 
+import com.github.dotkebi.authentication.AuthServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -14,59 +18,60 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class WebMvcConfig extends WebSecurityConfigurerAdapter {
 
-    /*@Autowired
-    @Qualifier("authServiceImpl")
-    private UserDetailsService adminService;*/
+    /*@Bean
+    public UserDetailsService adminUserDetailsService() {
+        return new AuthServiceImpl();
+    }*/
 
-    /*@Autowired
-    AdminAuthenticationProvider provider;*/
+    /*@Bean
+    public AuthenticationProvider provider() {
+        return new AdminAuthenticationProvider(passwordEncoder(), authService());
+    }*/
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+                .antMatchers(HttpMethod.OPTIONS, "/**")
+                .antMatchers("/css*")
+                .antMatchers("/js*")
+                .antMatchers("/img*")
+                .antMatchers("/resources*")
+        ;
+    }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-
-        httpSecurity.csrf().disable();
-        //httpSecurity.headers().frameOptions().disable();
-
-        // static resources
         httpSecurity
-                .authorizeRequests()
-                .antMatchers(
-                        "/css/**"
-                        , "/js/**"
-                        , "/img/**"
-                        , "/resources/**"
-                )
-                .permitAll()
-        ;
+                .csrf()
+                .disable()
 
-        httpSecurity
                 .authorizeRequests()
-                    .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                    .and()
+                .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                .and()
+
                 .formLogin()
-                    .loginPage("/login")
-                    //.loginProcessingUrl("/login-process")
-                    .failureUrl("/login?error")
-                    .usernameParameter("id")
-                    .passwordParameter("password")
-                    .defaultSuccessUrl("/normal/home", true)
-                    .and()
+                .loginPage("/login")
+                .failureUrl("/login?error=true")
+                .usernameParameter("id")
+                .passwordParameter("password")
+                .defaultSuccessUrl("/normal/home", true)
+                .permitAll()
+                .and()
+
                 .logout()
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                    .logoutSuccessUrl("/login?logout")
-                    .deleteCookies("JSESSIONID")
-        ;
+                .logoutSuccessUrl("/login?logout=true")
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+                .and()
 
-
-        httpSecurity.exceptionHandling()
+                .exceptionHandling()
                 .accessDeniedPage("/error")
-        ;
+                .and()
 
-        httpSecurity.sessionManagement()
+                .sessionManagement()
                 .invalidSessionUrl("/")
                 .maximumSessions(1)
         ;
-
     }
 
     @Override
@@ -82,7 +87,7 @@ public class WebMvcConfig extends WebSecurityConfigurerAdapter {
                 .authoritiesByUsernameQuery(
                         "select username, role from user_roles where username=?")
         ;*/
-        /*auth.userDetailsService(adminService)
+        /*auth.userDetailsService(adminUserDetailsService())
                 .passwordEncoder(passwordEncoder())
         ;*/
         /*auth.authenticationProvider(provider);*/

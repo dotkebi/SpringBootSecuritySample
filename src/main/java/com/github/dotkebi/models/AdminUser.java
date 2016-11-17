@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * @author by myoungjin on 2016-07-29.
+ * @author by dotkebi@gmail.com on 2016-07-29.
  */
 public class AdminUser implements UserDetails {
 

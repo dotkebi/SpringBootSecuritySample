@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * @author by myoungjin on 2016-08-08.
+ * @author by dotkebi@gmail.com on 2016-08-08.
  */
 @Service
 public class AuthServiceImpl implements UserDetailsService {

@@ -9,18 +9,25 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
 /**
- * @author by myoungjin on 2016-08-30.
+ * @author by dotkebi@gmail.com on 2016-08-30.
  */
 @Component
 public class AdminAuthenticationProvider implements AuthenticationProvider {
 
+    private final PasswordEncoder passwordEncoder;
+    private final AuthServiceImpl authService;
+
     @Autowired
-    private AuthServiceImpl authService;
+    public AdminAuthenticationProvider(PasswordEncoder passwordEncoder, AuthServiceImpl authService) {
+        this.passwordEncoder = passwordEncoder;
+        this.authService = authService;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -32,8 +39,6 @@ public class AdminAuthenticationProvider implements AuthenticationProvider {
         if (user == null || !user.getUsername().equalsIgnoreCase(username)) {
             throw new BadCredentialsException("Username not found.");
         }
-
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Wrong password.");
