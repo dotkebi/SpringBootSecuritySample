@@ -3,19 +3,29 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/test?useSSL=false
-    username: test
-    password: test
-    tomcat:
-      test-while-idle: true
-      time-between-eviction-runs-millis: 3600000
-      validation-query: SELECT 1
+    url: jdbc:h2:mem:test
+    username:
+    password:
+    #tomcat:
+      #test-while-idle: true
+      #time-between-eviction-runs-millis: 3600000
+      #validation-query: SELECT 1
   jpa:
     hibernate:
       ddl-auto: none
-    database: mysql
+    #database: mysql
     show-sql: true
 
 logging:
   file: logs/test.log
   level: info
+
+quartz:
+  enabled: true
+
+testJob:
+  frequency: 2000
+
+liquibase:
+  change-log: classpath:db/changelog/db.changelog-master.xml
+
